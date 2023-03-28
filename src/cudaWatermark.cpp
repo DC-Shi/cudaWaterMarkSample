@@ -231,5 +231,25 @@ int main(int argc, char *argv[])
     return -1;
   }
 
+  // Planned procedures:
+  // 1. Check input param, find whether we provide the input image, otherwise using default image.
+  // 2. Load the image using OpenCV, into Mat, let's assume the image is colored jpeg file.
+  // 3. Split by channel, Mat into MatChannel[3], where the order is BGR
+  // 3.1 Save the each channel into image file.
+  // 4. for each channel, do FFT, into new cuda array
+  // 4.1 convert cuda array to mat and save to image file.
+  // 5. for each ffted channel, add watermark to the corners.
+  // 5.1 save the changed ffted channel to image file.
+  // 6. for each channel, do iFFT, into normal space.
+  // 6.1 save iffted changed ffted channel to image file.
+  // 7. Combine 3 channels into one, and save into RGB file.
+  // 8. Compare initial image and watermarked image, pixel by pixel, show the max diff, avg diff. Estimate the result should be only a few digit off.
+
+  // Functions needed:
+  // Mat load_image(path)
+  // void save_image(path, Mat), void save_image(path, Mat, 'r''g''b')
+  // Mat array2Mat(cudaArray)
+  // cudaArray mat2Array(Mat)
+
   return 0;
 }
