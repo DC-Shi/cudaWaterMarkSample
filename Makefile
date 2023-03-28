@@ -267,7 +267,7 @@ SAMPLE_ENABLED := 1
 
 # This sample is not supported on QNX
 ifeq ($(TARGET_OS),qnx)
-  $(info >>> WARNING - convFilterNPP is not supported on QNX - waiving sample <<<)
+  $(info >>> WARNING - cudaWatermark is not supported on QNX - waiving sample <<<)
   SAMPLE_ENABLED := 0
 endif
 
@@ -327,7 +327,7 @@ endif
 # Target rules
 all: build
 
-build: convFilterNPP.exe
+build: cudaWatermark.exe
 
 check.deps:
 ifeq ($(SAMPLE_ENABLED),0)
@@ -336,19 +336,19 @@ else
 	@echo "Sample is ready - all dependencies have been met"
 endif
 
-convFilterNPP.o: src/convFilterNPP.cpp
+cudaWatermark.o: src/cudaWatermark.cpp
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
-convFilterNPP.exe: convFilterNPP.o
+cudaWatermark.exe: cudaWatermark.o
 	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
 	$(EXEC) mkdir -p ./bin
 	$(EXEC) mv $@ ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_$@
 
 run: build
-	$(EXEC) ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_convFilterNPP.exe $(ARGS)
+	$(EXEC) ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_cudaWatermark.exe $(ARGS)
 
 clean:
-	rm -f convFilterNPP.exe convFilterNPP.o
-	rm -rf ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_convFilterNPP.exe
+	rm -f cudaWatermark.exe cudaWatermark.o
+	rm -rf ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_cudaWatermark.exe
 
 clobber: clean
