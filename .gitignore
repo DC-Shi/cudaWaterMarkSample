@@ -6,3 +6,6 @@
 *.fatbin
 *.o
 lib/FreeImage
+
+# ignore archives
+*.zip
