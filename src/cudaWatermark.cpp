@@ -31,7 +31,7 @@
 #include <windows.h>
 #pragma warning(disable : 4819)
 #endif
-
+#include <opencv2/imgcodecs.hpp>
 #include <Exceptions.h>
 #include <ImageIO.h>
 #include <ImagesCPU.h>
