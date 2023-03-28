@@ -303,7 +303,7 @@ endif
 
 #ALL_CCFLAGS += --threads 0
 
-INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include
+INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include -I/usr/include/opencv4
 
 LIBRARIES += -L./lib/FreeImage/lib/x64 -L./lib/FreeImage/lib/$(TARGET_OS) -L./lib/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage
 
