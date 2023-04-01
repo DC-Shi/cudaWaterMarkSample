@@ -303,7 +303,7 @@ endif
 
 #ALL_CCFLAGS += --threads 0
 
-INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include -I/usr/include/opencv4
+INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include -I/usr/include/opencv4 -I./src
 
 LIBRARIES += -L./lib/FreeImage/lib/x64 -L./lib/FreeImage/lib/$(TARGET_OS) -L./lib/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage
 
@@ -339,7 +339,10 @@ endif
 cudaWatermark.o: src/cudaWatermark.cpp
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
-cudaWatermark.exe: cudaWatermark.o
+fileio.o: src/fileio.cpp
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
+
+cudaWatermark.exe: cudaWatermark.o fileio.o
 	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
 	$(EXEC) mkdir -p ./bin
 	$(EXEC) mv $@ ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_$@

@@ -48,27 +48,7 @@
 #include <helper_string.h>
 
 #include <chrono> // Add timing
-
-bool printfNPPinfo(int argc, char *argv[])
-{
-  const NppLibraryVersion *libVer = nppGetLibVersion();
-
-  printf("NPP Library Version %d.%d.%d\n", libVer->major, libVer->minor,
-         libVer->build);
-
-  int driverVersion, runtimeVersion;
-  cudaDriverGetVersion(&driverVersion);
-  cudaRuntimeGetVersion(&runtimeVersion);
-
-  printf("  CUDA Driver  Version: %d.%d\n", driverVersion / 1000,
-         (driverVersion % 100) / 10);
-  printf("  CUDA Runtime Version: %d.%d\n", runtimeVersion / 1000,
-         (runtimeVersion % 100) / 10);
-
-  // Min spec is SM 1.0 devices
-  bool bVal = checkCudaCapabilities(1, 0);
-  return bVal;
-}
+#include "fileio.h"
 
 int main(int argc, char *argv[])
 {
@@ -81,10 +61,18 @@ int main(int argc, char *argv[])
 
     findCudaDevice(argc, (const char **)argv);
 
-    if (printfNPPinfo(argc, argv) == false)
-    {
-      exit(EXIT_SUCCESS);
-    }
+    std::string filename = "./data/color.png";
+    int channels = -1;
+    ColoredImageType img = loadImage(filename, channels);
+    std::cout << "The image has " << channels << " channels." << std::endl;
+    
+    auto imgStack = imageChannelSplit(img, channels);
+
+    saveSlice(imgStack, filename, "_r", 0);
+    saveSlice(imgStack, filename, "_g", 1);
+    saveSlice(imgStack, filename, "_b", 2);
+
+    exit(EXIT_SUCCESS);
 
     if (checkCmdLineFlag(argc, (const char **)argv, "input"))
     {
