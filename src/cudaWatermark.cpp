@@ -107,10 +107,11 @@ int main(int argc, char *argv[])
       devImgG = convertImgToBytes(imgStack[1]);
       devImgB = convertImgToBytes(imgStack[2]);
 
-      printf("Debugprint: devImgR, (%f, %fi), (%f, %fi)\n", 
-      devImgR[0].x, devImgR[0].y, 
-      devImgR[1].x, devImgR[1].y
-      );
+
+      std::cerr << "DEBUG: Step 3 devImgR: " << devImgR << 
+          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+          std::endl;
 
       ////////////////////////////////////////////////////////////////
       // Step 4: Make FFT
@@ -131,12 +132,10 @@ int main(int argc, char *argv[])
       // Need to wait for FFT to be completed
       checkCudaErrors( cudaDeviceSynchronize() );
 
-      std::cerr << "DEBUG: devImgR: " << devImgR << std::endl;
-
-        printf("Debugprint: devImgR, (%f, %fi), (%f, %fi)\n", 
-        devImgR[0].x, devImgR[0].y, 
-        devImgR[1].x, devImgR[1].y
-        );
+      std::cerr << "DEBUG: Step 4.1 devImgR: " << devImgR << 
+          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+          std::endl;
 
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "fft", true);
       
@@ -145,11 +144,10 @@ int main(int argc, char *argv[])
       std::cout << "\tStep 5. for each ffted channel, add watermark to the corners." << std::endl;
       checkCudaErrors( cudaGetLastError() );
 
-      // applyKernelToImgAsync();
-      checkCudaErrors( cudaGetLastError() );
+      applyKernelToImgAsync();
+      checkCudaErrors( cudaDeviceSynchronize() );
       // 5.1 save the changed ffted channel to image file.
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "wmfft", true);
-      checkCudaErrors( cudaGetLastError() );
 
       ////////////////////////////////////////////////////////////////
       // 6. for each channel, do iFFT, into normal space.
@@ -174,12 +172,11 @@ int main(int argc, char *argv[])
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "wm_ifft", true);
 
       
-      std::cerr << "DEBUG: devImgR: " << devImgR << std::endl;
-
-        printf("Debugprint: devImgR, (%f, %fi), (%f, %fi)\n", 
-        devImgR[0].x, devImgR[0].y, 
-        devImgR[1].x, devImgR[1].y
-        );
+      
+      std::cerr << "DEBUG: Step 6.1 devImgR: " << devImgR << 
+          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+          std::endl;
         
       ////////////////////////////////////////////////////////////////
       // 7. Combine 3 channels into one, and save into RGB file.

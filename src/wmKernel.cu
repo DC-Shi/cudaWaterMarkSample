@@ -2,7 +2,11 @@
 
 __global__ void applyKernel()
 {
-
+    size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
+    if (idx == 0)
+    {
+        printf("Dummy kernel not implemented\n");
+    }
 }
 
 void applyKernelToImgAsync()
