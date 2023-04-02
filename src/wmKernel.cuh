@@ -9,5 +9,6 @@
 void applyKernelToImgAsync();
 
 void scaleComplexAsync(cufftComplex* array, int width, int height, float factor);
+void compareTwoImg(ColoredImageType a, ColoredImageType b);
 
 #endif
