@@ -21,14 +21,14 @@ std::string parseArgs(const int argc, const char ** argv, const char * option, c
     {
         if (defaultValue.empty())
         {
-            std::cerr << "ERR: You must provide value of the option <" << option
+            std::cerr << "ERR: You must provide value of the option <-" << option
                 << "> to continue the program, exit." << std::endl;
             exit(EXIT_FAILURE);
 
         }
 
-        std::cout << "Using default value " << defaultValue <<
-            " for this option <" << option << ">" <<std::endl;
+        std::cerr << "INFO: Searching for " << defaultValue <<
+            " for this option <" << option << "> in folders." <<std::endl;
         filePath = sdkFindFilePath(defaultValue.data(), argv[0]);
     }
 
@@ -99,7 +99,7 @@ ColoredImageType loadImage(const std::string imgPath, int& channels)
     FREE_IMAGE_TYPE internalType = FreeImage_GetImageType(inputImage);
     auto   m_bpp = FreeImage_GetBPP(inputImage);
 
-    std::cout << imgPath << "type:"<<internalType<<std::endl;
+    std::cerr << "INFO: " << imgPath << " has type:" << internalType << std::endl;
     if(internalType == FIT_BITMAP)
     {
         //standard bitmap
@@ -142,7 +142,7 @@ bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::st
     int width = FreeImage_GetWidth(grayImg);
     int height = FreeImage_GetHeight(grayImg);
     int pitch = FreeImage_GetPitch(grayImg);
-    std::cout << "INFO: saveSlice: " << width << "x" << height <<
+    std::cerr << "INFO: saveSlice: " << width << "x" << height <<
         " into: " << filename << std::endl;
 
     // ColoredImageType rgbImage = FreeImage_ConvertTo24Bits(img[idx]);

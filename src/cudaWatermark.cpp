@@ -65,12 +65,14 @@ int main(int argc, char *argv[])
 
     for (auto imgName : imgNames)
     {
+      std::cout << "==== Dealing with image " << imgName << "====" << std::endl;
       // Step 1: get the filename and load into image.
       std::string filename = parseArgs(argc, (const char **)argv, "input", imgName);
       int channels = -1;
       ColoredImageType img = loadImage(filename, channels);
-      std::cout << "The image has " << channels << " channels." << std::endl;
+      std::cerr << "INFO: The image has " << channels << " channels." << std::endl;
 
+      // Step 2: split the image into channels, save for each file.
       auto imgStack = imageChannelSplit(img, channels);
 
       saveSlice(imgStack, filename, "r", 0);
@@ -93,10 +95,6 @@ int main(int argc, char *argv[])
   }
 
   // Planned procedures:
-  // 1. Check input param, find whether we provide the input image, otherwise using default image.
-  // 2. Load the image using OpenCV, into Mat, let's assume the image is colored jpeg file.
-  // 3. Split by channel, Mat into MatChannel[3], where the order is BGR
-  // 3.1 Save the each channel into image file.
   // 4. for each channel, do FFT, into new cuda array
   // 4.1 convert cuda array to mat and save to image file.
   // 5. for each ffted channel, add watermark to the corners.
