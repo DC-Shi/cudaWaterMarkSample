@@ -351,7 +351,7 @@ run: build
 	$(EXEC) ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_cudaWatermark.exe $(ARGS)
 
 clean:
-	rm -f cudaWatermark.exe cudaWatermark.o
+	rm -f *.exe *.o
 	rm -rf ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_cudaWatermark.exe
 
 clobber: clean
