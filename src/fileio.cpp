@@ -211,7 +211,6 @@ ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int cha
     int bytespp = FreeImage_GetLine(rgbImage) / FreeImage_GetWidth(rgbImage);
     int grayBytePP = FreeImage_GetLine(imgs[0]) / FreeImage_GetWidth(imgs[0]);
 
-    printf("bytePP %d, grayPP %d\n", bytespp, grayBytePP);
     for(unsigned y = 0; y < FreeImage_GetHeight(rgbImage); y++)
     {
         BYTE *bits = FreeImage_GetScanLine(rgbImage, y);
