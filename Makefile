@@ -345,7 +345,7 @@ wmKernel.o: src/wmKernel.cu
 fileio.o: src/fileio.cpp
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
-cudaWatermark.exe: cudaWatermark.o fileio.o
+cudaWatermark.exe: cudaWatermark.o fileio.o wmKernel.o
 	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
 	$(EXEC) mkdir -p ./bin
 	$(EXEC) mv $@ ./bin/$(TARGET_ARCH)_$(TARGET_OS)_$(BUILD_TYPE)_$@
