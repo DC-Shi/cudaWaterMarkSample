@@ -6,4 +6,6 @@ export SMS=62
 
 make clean build
 
-make run ARGS="-input=data/color.png"
+make run 
+
+#ARGS="-input=data/color.png"

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
     findCudaDevice(argc, (const char **)argv);
 
-    std::string filename = parseArgs(argc, (const char **)argv, "input", "color.png");
+    std::string filename = parseArgs(argc, (const char **)argv, "input", "sloth.png");
     int channels = -1;
     ColoredImageType img = loadImage(filename, channels);
     std::cout << "The image has " << channels << " channels." << std::endl;
