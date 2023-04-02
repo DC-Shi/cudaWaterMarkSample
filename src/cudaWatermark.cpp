@@ -69,8 +69,12 @@ int main(int argc, char *argv[])
 
     for (auto imgName : imgNames)
     {
-      std::cout << "==== Dealing with image " << imgName << "====" << std::endl;
+      std::cout << "==== Dealing with image " << imgName << " ====" << std::endl;
+      ////////////////////////////////////////////////////////////////
       // Step 1: get the filename and load into image.
+      std::cout << "\tStep 1: get the filename and load into image." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
+
       std::string filename = parseArgs(argc, (const char **)argv, "input", imgName);
       int channels = -1;
       ColoredImageType img = loadImage(filename, channels);
@@ -79,17 +83,25 @@ int main(int argc, char *argv[])
       std::cerr << "INFO: The image dimension is " <<
           width << "x" << height << "x" << channels <<
           " (W*H*C)." << std::endl;
-
+      
+      ////////////////////////////////////////////////////////////////
       // Step 2: split the image into channels, save for each file.
+      std::cout << "\tStep 2: split the image into channels, save for each file." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
+
       auto imgStack = imageChannelSplit(img, channels);
 
       saveSlice(imgStack, filename, "r", 0);
       saveSlice(imgStack, filename, "g", 1);
       saveSlice(imgStack, filename, "b", 2);
 
+      ////////////////////////////////////////////////////////////////
       // Step 3: make the data onto GPU
       // Image that stores on CPU
       // float *imgR, *imgG, *imgB;
+      std::cout << "\tStep 3: make the data onto GPU." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
+
       cufftComplex *devImgR, *devImgG, *devImgB;
       devImgR = convertImgToBytes(imgStack[0]);
       devImgG = convertImgToBytes(imgStack[1]);
@@ -100,9 +112,11 @@ int main(int argc, char *argv[])
       devImgR[1].x, devImgR[1].y
       );
 
+      ////////////////////////////////////////////////////////////////
+      // Step 4: Make FFT
+      std::cout << "\tStep 4: Make FFT." << std::endl;
       checkCudaErrors( cudaGetLastError() );
 
-      // Step 4: Make FFT
       cufftHandle fftPlan;
       cufftResult stat;
       cufftPlan2d(&fftPlan, width, height, CUFFT_C2C);
@@ -115,7 +129,7 @@ int main(int argc, char *argv[])
       }
       // 4.1 Save the FFT's result, real part.
       // Need to wait for FFT to be completed
-      cudaDeviceSynchronize();
+      checkCudaErrors( cudaDeviceSynchronize() );
 
       std::cerr << "DEBUG: devImgR: " << devImgR << std::endl;
 
@@ -125,12 +139,23 @@ int main(int argc, char *argv[])
         );
 
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "fft", true);
+      
+      ////////////////////////////////////////////////////////////////
+      // Step 5. for each ffted channel, add watermark to the corners.
+      std::cout << "\tStep 5. for each ffted channel, add watermark to the corners." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
 
-      // 5. for each ffted channel, add watermark to the corners.
-      applyKernel();
+      // applyKernelToImgAsync();
+      checkCudaErrors( cudaGetLastError() );
       // 5.1 save the changed ffted channel to image file.
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "wmfft", true);
+      checkCudaErrors( cudaGetLastError() );
+
+      ////////////////////////////////////////////////////////////////
       // 6. for each channel, do iFFT, into normal space.
+      std::cout << "\tStep 6. for each channel, do iFFT, into normal space." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
+
       stat = cufftExecC2C(fftPlan, devImgR, devImgR, CUFFT_INVERSE);
       stat = cufftExecC2C(fftPlan, devImgG, devImgG, CUFFT_INVERSE);
       stat = cufftExecC2C(fftPlan, devImgB, devImgB, CUFFT_INVERSE);
@@ -138,13 +163,14 @@ int main(int argc, char *argv[])
           printf("cufftExecC2C back error %d\n",stat);
           return 1;
       }
+      checkCudaErrors( cudaGetLastError() );
       
       // 6.1 save iffted changed ffted channel to image file.
       // Need to wait for FFT to be completed
       scaleComplexAsync(devImgR, width, height, width*height);
       scaleComplexAsync(devImgG, width, height, width*height);
       scaleComplexAsync(devImgB, width, height, width*height);
-      cudaDeviceSynchronize();
+      checkCudaErrors( cudaDeviceSynchronize() );
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "wm_ifft", true);
 
       
@@ -154,18 +180,38 @@ int main(int argc, char *argv[])
         devImgR[0].x, devImgR[0].y, 
         devImgR[1].x, devImgR[1].y
         );
-  // 7. Combine 3 channels into one, and save into RGB file.
-  // 8. Compare initial image and watermarked image, pixel by pixel, show the max diff, avg diff. Estimate the result should be only a few digit off.
+        
+      ////////////////////////////////////////////////////////////////
+      // 7. Combine 3 channels into one, and save into RGB file.
+      std::cout << "\tStep 7. Combine 3 channels into one, and save into RGB file." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
+
+      ColoredImageType tmpfftedR = convertBytesToImg(devImgR, width, height, true);
+      ColoredImageType tmpfftedG = convertBytesToImg(devImgG, width, height, true);
+      ColoredImageType tmpfftedB = convertBytesToImg(devImgB, width, height, true);
+      GrayscaleImageStack fftedImageStack {tmpfftedR, tmpfftedG, tmpfftedB};
+      ColoredImageType colorFftedImg = imageChannelMerge(fftedImageStack, 3);
+      saveImage(colorFftedImg, filename + ".reconstructed.png");
+      // Free allocated images.
+      for (auto imgC : fftedImageStack)
+        FreeImage_Unload(imgC);
+
+      ////////////////////////////////////////////////////////////////
+      // 8. Compare initial image and watermarked image, pixel by pixel, show the max diff, avg diff. Estimate the result should be only a few digit off.
+      std::cout << "\tStep 8. Compare initial image and watermarked image." << std::endl;
+      checkCudaErrors( cudaGetLastError() );
 
       // Free resources
       FreeImage_Unload(img);
       for (auto imgC : imgStack)
         FreeImage_Unload(imgC);
+      checkCudaErrors( cudaGetLastError() );
         
       checkCudaErrors( cudaFree(devImgR) );
       checkCudaErrors( cudaFree(devImgG) );
       checkCudaErrors( cudaFree(devImgB) );
       cufftDestroy(fftPlan);
+      checkCudaErrors( cudaGetLastError() );
     }
   }
   catch (...)
