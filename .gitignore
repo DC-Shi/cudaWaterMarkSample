@@ -9,3 +9,6 @@ lib/FreeImage
 
 # ignore archives
 *.zip
+
+# VScode folders
+.vscode
