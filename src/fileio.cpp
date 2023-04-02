@@ -196,26 +196,35 @@ ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int cha
     int width = FreeImage_GetWidth(imgs[0]);
     int height = FreeImage_GetHeight(imgs[0]);
     ColoredImageType rgbImage = FreeImage_Allocate(width, height, 24);
-    BYTE *bits = FreeImage_GetBits(rgbImage);
+    int rgbPitch = FreeImage_GetPitch(rgbImage);
+    BYTE *rgbBits = FreeImage_GetBits(rgbImage);
+    int grayPitch = FreeImage_GetPitch(imgs[0]);
+    BYTE *rBits = FreeImage_GetBits(imgs[0]);
+    BYTE *gBits = FreeImage_GetBits(imgs[1]);
+    BYTE *bBits = FreeImage_GetBits(imgs[2]);
 
+    RGBQUAD pixelColor;
+    BYTE pixelR, pixelG, pixelB;
+    // Set pixel values from imageArray
     for (int y = 0; y < height; y++)
     {
+        BYTE *pixel = (BYTE *)rgbBits + y * rgbPitch;
         for (int x = 0; x < width; x++)
         {
-            BYTE r = FreeImage_GetPixelIndex(imgs[0], x, y);
+            int index = (x * height + y) * 3;
+            // pixel[index] = rBits[x * height + y];
+            // pixel[index+1] = gBits[x * height + y];
+            // pixel[index+2] = bBits[x * height + y];
 
-            int index = (y * width + x) * 3;
-            bits[index] = r;
-            if (channels > 1)
-            {
-                BYTE g = FreeImage_GetPixelIndex(imgs[1], x, y);
-                bits[index + 1] = g;
-            }
-            if (channels > 2)
-            {
-                BYTE b = FreeImage_GetPixelIndex(imgs[2], x, y);
-                bits[index + 2] = b;
-            }
+            FreeImage_GetPixelIndex(imgs[0], x, y, &pixelR);
+            FreeImage_GetPixelIndex(imgs[1], x, y, &pixelG);
+            FreeImage_GetPixelIndex(imgs[2], x, y, &pixelB);
+
+            if (channels <= 1) pixelColor.rgbRed = pixelR;
+            if (channels <= 2) pixelColor.rgbGreen = pixelG;
+            if (channels <= 3) pixelColor.rgbBlue = pixelB;
+
+            FreeImage_SetPixelColor(rgbImage, x, y, &pixelColor);
         }
     }
 
