@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     findCudaDevice(argc, (const char **)argv);
 
-    std::vector<std::string> imgNames{"color.png", "sloth.png"};
+    std::vector<std::string> imgNames{"color.png"};
 
     for (auto imgName : imgNames)
     {
@@ -155,10 +155,18 @@ int main(int argc, char *argv[])
       checkCudaErrors( cudaGetLastError() );
 
       stat = cufftExecC2C(fftPlan, devImgR, devImgR, CUFFT_INVERSE);
+      if (stat != CUFFT_SUCCESS) {
+          printf("cufftExecC2C R back error %d\n",stat);
+          return 1;
+      }
       stat = cufftExecC2C(fftPlan, devImgG, devImgG, CUFFT_INVERSE);
+      if (stat != CUFFT_SUCCESS) {
+          printf("cufftExecC2C G back error %d\n",stat);
+          return 1;
+      }
       stat = cufftExecC2C(fftPlan, devImgB, devImgB, CUFFT_INVERSE);
       if (stat != CUFFT_SUCCESS) {
-          printf("cufftExecC2C back error %d\n",stat);
+          printf("cufftExecC2C B back error %d\n",stat);
           return 1;
       }
       checkCudaErrors( cudaGetLastError() );

@@ -196,37 +196,89 @@ ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int cha
     int width = FreeImage_GetWidth(imgs[0]);
     int height = FreeImage_GetHeight(imgs[0]);
     ColoredImageType rgbImage = FreeImage_Allocate(width, height, 24);
-    int rgbPitch = FreeImage_GetPitch(rgbImage);
-    BYTE *rgbBits = FreeImage_GetBits(rgbImage);
-    int grayPitch = FreeImage_GetPitch(imgs[0]);
-    BYTE *rBits = FreeImage_GetBits(imgs[0]);
-    BYTE *gBits = FreeImage_GetBits(imgs[1]);
-    BYTE *bBits = FreeImage_GetBits(imgs[2]);
+    // int rgbPitch = FreeImage_GetPitch(rgbImage);
+    // // BYTE *rgbBits = FreeImage_GetBits(rgbImage);
+    // // int grayPitch = FreeImage_GetPitch(imgs[0]);
+    // // BYTE *rBits = FreeImage_GetBits(imgs[0]);
+    // // BYTE *gBits = FreeImage_GetBits(imgs[1]);
+    // // BYTE *bBits = FreeImage_GetBits(imgs[2]);
 
-    RGBQUAD pixelColor;
-    BYTE pixelR, pixelG, pixelB;
-    // Set pixel values from imageArray
-    for (int y = 0; y < height; y++)
+    // for (int idx = 0; idx < 10; idx++)
+    // {
+    //     printf("%d, R=%d, G=%d, B=%d\n", idx, rBits[idx], gBits[idx], bBits[idx]);
+    // }
+
+    int bytespp = FreeImage_GetLine(rgbImage) / FreeImage_GetWidth(rgbImage);
+    int grayBytePP = FreeImage_GetLine(imgs[0]) / FreeImage_GetWidth(imgs[0]);
+
+    printf("bytePP %d, grayPP %d\n", bytespp, grayBytePP);
+    for(unsigned y = 0; y < FreeImage_GetHeight(rgbImage); y++)
     {
-        BYTE *pixel = (BYTE *)rgbBits + y * rgbPitch;
-        for (int x = 0; x < width; x++)
+        BYTE *bits = FreeImage_GetScanLine(rgbImage, y);
+        BYTE *rBits = FreeImage_GetScanLine(imgs[0], y);
+        BYTE *gBits = FreeImage_GetScanLine(imgs[1], y);
+        BYTE *bBits = FreeImage_GetScanLine(imgs[2], y);
+
+        for(unsigned x = 0; x < FreeImage_GetWidth(rgbImage); x++)
         {
-            int index = (x * height + y) * 3;
-            // pixel[index] = rBits[x * height + y];
-            // pixel[index+1] = gBits[x * height + y];
-            // pixel[index+2] = bBits[x * height + y];
-
-            FreeImage_GetPixelIndex(imgs[0], x, y, &pixelR);
-            FreeImage_GetPixelIndex(imgs[1], x, y, &pixelG);
-            FreeImage_GetPixelIndex(imgs[2], x, y, &pixelB);
-
-            if (channels <= 1) pixelColor.rgbRed = pixelR;
-            if (channels <= 2) pixelColor.rgbGreen = pixelG;
-            if (channels <= 3) pixelColor.rgbBlue = pixelB;
-
-            FreeImage_SetPixelColor(rgbImage, x, y, &pixelColor);
+            // Set pixel color to green with a transparency of 128
+            bits[FI_RGBA_RED] = rBits[0];
+            bits[FI_RGBA_GREEN] = gBits[0];
+            bits[FI_RGBA_BLUE] = bBits[0];
+            //bits[FI_RGBA_ALPHA] = 128;
+            // jump to next pixel
+            bits += bytespp;
+            rBits += grayBytePP;
+            gBits += grayBytePP;
+            bBits += grayBytePP;
         }
     }
+
+    // BYTE pixelR, pixelG, pixelB;
+    // // Set pixel values from imageArray
+    // for (int y = 0; y < height; y++)
+    // {
+    //     BYTE *pixel = (BYTE *)rgbBits + y * rgbPitch;
+    //     for (int x = 0; x < width; x++)
+    //     {
+    //         int index = (x * height + y) * 3;
+    //         // pixel[index] = rBits[x * height + y];
+    //         // pixel[index+1] = gBits[x * height + y];
+    //         // pixel[index+2] = bBits[x * height + y];
+
+    //         FreeImage_GetPixelIndex(imgs[0], x, y, &pixelR);
+    //         FreeImage_GetPixelIndex(imgs[1], x, y, &pixelG);
+    //         FreeImage_GetPixelIndex(imgs[2], x, y, &pixelB);
+
+    //         if (x<10 && y==0)
+    //         {
+    //             printf("RGB= %d, %d, %d\n", pixelR, pixelG, pixelB);
+    //         }
+            
+    //         RGBTRIPLE pixelColor;
+
+    //         if (x<10 && y==0)
+    //         {
+    //             printf("before pixelColor= %d, %d, %d\n", pixelColor.rgbtRed, pixelColor.rgbtGreen, pixelColor.rgbtBlue);
+    //         }
+
+    //         if (channels <= 1) { pixelColor.rgbtRed = pixelR;   
+    //         if (x<10 && y==0)
+    //         {
+    //             printf("setting r pixelColor= %d, %d, %d\n", pixelColor.rgbtRed, pixelColor.rgbtGreen, pixelColor.rgbtBlue, FI_RGBA_RED);
+    //         }
+    //         }
+    //         if (channels <= 2) { pixelColor.rgbtGreen = pixelG; }
+    //         if (channels <= 3) { pixelColor.rgbtBlue = pixelB;  }
+
+    //         if (x<10 && y==0)
+    //         {
+    //             printf("after  pixelColor= %d, %d, %d\n", pixelColor.rgbtRed, pixelColor.rgbtGreen, pixelColor.rgbtBlue);
+    //         }
+
+    //         FreeImage_SetPixelColor(rgbImage, x, y, &pixelColor);
+    //     }
+    // }
 
     return rgbImage;
 }
