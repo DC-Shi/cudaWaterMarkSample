@@ -305,7 +305,7 @@ endif
 
 INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include -I/usr/include/opencv4 -I./src
 
-LIBRARIES += -L./lib/FreeImage/lib/x64 -L./lib/FreeImage/lib/$(TARGET_OS) -L./lib/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage
+LIBRARIES += -L./lib/FreeImage/lib/x64 -L./lib/FreeImage/lib/$(TARGET_OS) -L./lib/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage -lcufft
 
 # Remove LDFLAGS since its value is -m64 which is also defined in ALL_CCFLAGS
 # Attempt to compile a minimal application linked against FreeImage. If a.out exists, FreeImage is properly set up.
@@ -337,6 +337,9 @@ else
 endif
 
 cudaWatermark.o: src/cudaWatermark.cpp
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
+
+wmKernel.o: src/wmKernel.cu
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
 fileio.o: src/fileio.cpp
