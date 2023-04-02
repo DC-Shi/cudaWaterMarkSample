@@ -1,6 +1,7 @@
 #include "fileio.h"
 #include <iostream>
 #include <helper_string.h>
+#include <cuda_runtime.h>
 
 /// @brief Parse from commandline
 /// @param argc How many arguments
@@ -191,3 +192,125 @@ GrayscaleImageStack imageChannelSplit(const ColoredImageType img, const int chan
 /// @param channels How many channels does this image have
 /// @return The merged color image
 ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int channels);
+
+
+
+/// @brief Save cufftComplex to file
+/// @param devImgR The complex array in red channel to be saved
+/// @param devImgG The complex array in green channel to be saved
+/// @param devImgB The complex array in blue channel to be saved
+/// @param width Image width
+/// @param height Image height
+/// @param imgPath Image filename
+/// @param suffix suffix of the filename
+/// @param real Whether we save real part or the imaginary part, default is the real part
+/// @return Whether the save is successful
+bool saveImage(cufftComplex* devImgR, cufftComplex* devImgG, cufftComplex* devImgB,
+    const int width, const int height, 
+    const std::string imgPath, const std::string suffix, const bool real)
+{    
+    std::string fftFilename = imgPath;
+    fftFilename.insert(imgPath.length()-4, "_"+suffix);
+    ColoredImageType tmpfftR = convertBytesToImg(devImgR, width, height, real);
+    ColoredImageType tmpfftG = convertBytesToImg(devImgG, width, height, real);
+    ColoredImageType tmpfftB = convertBytesToImg(devImgB, width, height, real);
+    GrayscaleImageStack fftImage {tmpfftR, tmpfftG, tmpfftB};
+    saveSlice(fftImage, fftFilename, "r", 0);
+    saveSlice(fftImage, fftFilename, "g", 1);
+    saveSlice(fftImage, fftFilename, "b", 2);
+
+    // Free the image locally generated.
+    for (auto imgC : fftImage)
+        FreeImage_Unload(imgC);
+}
+
+
+cufftComplex * convertImgToBytes(ColoredImageType grayImage)
+{
+    BYTE* bits = FreeImage_GetBits(grayImage);
+    int width = FreeImage_GetWidth(grayImage);
+    int height = FreeImage_GetHeight(grayImage);
+    int pitch = FreeImage_GetPitch(grayImage);
+    cufftComplex* imageArray;
+    cudaMallocManaged(&imageArray, width * height * sizeof(cufftComplex));
+    for (int y = 0; y < height; y++)
+    {
+        BYTE* pixel = (BYTE*)bits + y * pitch;
+        for (int x = 0; x < width; x++)
+        {
+            // We write the result to column-major array
+            imageArray[x * height + y].x = pixel[x];
+            imageArray[x * height + y].y = 0;
+        }
+    }
+
+    return imageArray;
+}
+
+
+ColoredImageType convertBytesToImg(float* grayArray, const int width, const int height)
+{
+    // Create a new 8-bit grayscale image from column-major array.
+    FIBITMAP* grayImage = FreeImage_Allocate(width, height, 8);
+    BYTE* bits = FreeImage_GetBits(grayImage);
+    int pitch = FreeImage_GetPitch(grayImage);
+
+    float minValue = 100;
+    float maxValue = -100;
+
+    // Set pixel values from imageArray
+    for (int y = 0; y < height; y++) {
+        BYTE* pixel = (BYTE*)bits + y * pitch;
+        for (int x = 0; x < width; x++) {
+            float value = grayArray[x * height + y];
+            pixel[x] = (uint8_t)value;
+
+            if (minValue > value) minValue = value;
+            if (maxValue < value) maxValue = value;
+        }
+    }
+
+    std::cerr << "DEBUG: convertBytesToImg, Complex, min value: " <<
+        minValue << " , max value: " << maxValue << std::endl;
+
+    return grayImage;
+}
+
+
+ColoredImageType convertBytesToImg(cufftComplex* grayArray, const int width, const int height, const bool real)
+{
+    // Create a new 8-bit grayscale image from column-major array.
+    FIBITMAP* grayImage = FreeImage_Allocate(width, height, 8);
+    BYTE* bits = FreeImage_GetBits(grayImage);
+    int pitch = FreeImage_GetPitch(grayImage);
+
+    float minValue = 100;
+    float maxValue = -100;
+    std::cerr << "DEBUG: convertBytesToImg, Complex, ptr: " <<
+        grayArray << " , pitch: " << pitch << " , width: " << width << " , height: " << height << std::endl;
+
+    // Set pixel values from imageArray
+    for (int y = 0; y < height; y++) {
+        BYTE* pixel = (BYTE*)bits + y * pitch;
+        for (int x = 0; x < width; x++) {
+          // printf("(%d, %d)\n", x, y);
+          float value;
+          if (real)
+            value = grayArray[x * height + y].x;
+          else
+            value = grayArray[x * height + y].y;
+          // printf("(%d, %d)\n", x, y);
+            pixel[x] = (uint8_t)value;
+          // printf("(%d, %d)\n", x, y);
+
+            if (minValue > value) minValue = value;
+            if (maxValue < value) maxValue = value;
+        }
+    }
+
+    std::cerr << "DEBUG: convertBytesToImg, Complex, min value: " <<
+        minValue << " , max value: " << maxValue << std::endl;
+
+    return grayImage;
+}
+

@@ -4,6 +4,7 @@
 #include <string>
 #include <FreeImage.h>
 #include <vector>
+#include <cufft.h>
 
 using ColoredImageType = FIBITMAP*;
 using GrayscaleImageStack = std::vector<FIBITMAP*>;
@@ -30,6 +31,21 @@ ColoredImageType loadImage(const std::string imgPath, int& channels);
 bool saveImage(ColoredImageType img, const std::string imgPath);
 
 
+/// @brief Save cufftComplex to file
+/// @param devImgR The complex array in red channel to be saved
+/// @param devImgG The complex array in green channel to be saved
+/// @param devImgB The complex array in blue channel to be saved
+/// @param width Image width
+/// @param height Image height
+/// @param imgPath Image filename
+/// @param suffix suffix of the filename
+/// @param real Whether we save real part or the imaginary part, default is the real part
+/// @return Whether the save is successful
+bool saveImage(cufftComplex* devImgR, cufftComplex* devImgG, cufftComplex* devImgB,
+    const int width, const int height, 
+    const std::string imgPath, const std::string suffix, const bool real=true);
+
+
 /// @brief Save one slice of the image, the grayscale, into particular colored images.
 /// @param img The grayscale image ready to save
 /// @param imgPath Image file path
@@ -50,5 +66,10 @@ GrayscaleImageStack imageChannelSplit(const ColoredImageType img, const int chan
 /// @return The merged color image
 ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int channels);
 
+
+
+cufftComplex * convertImgToBytes(ColoredImageType grayImage);
+ColoredImageType convertBytesToImg(float* grayArray, const int width, const int height);
+ColoredImageType convertBytesToImg(cufftComplex* grayArray, const int width, const int height, const bool real);
 
 #endif
