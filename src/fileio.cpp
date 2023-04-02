@@ -8,8 +8,8 @@
 /// @param argv Arguments array
 /// @param option Which option should be parsed
 /// @param defaultValue The default value for this option, empty means the commandline must provide this option to continue
-/// @return 
-std::string parseArgs(const int argc, const char ** argv, const char * option, const std::string defaultValue)
+/// @return
+std::string parseArgs(const int argc, const char **argv, const char *option, const std::string defaultValue)
 {
     std::string retFilename;
     char *filePath;
@@ -23,13 +23,12 @@ std::string parseArgs(const int argc, const char ** argv, const char * option, c
         if (defaultValue.empty())
         {
             std::cerr << "ERR: You must provide value of the option <-" << option
-                << "> to continue the program, exit." << std::endl;
+                      << "> to continue the program, exit." << std::endl;
             exit(EXIT_FAILURE);
-
         }
 
         std::cerr << "INFO: Searching for " << defaultValue <<
-            " for this option <" << option << "> in folders." <<std::endl;
+            " for this option <" << option << "> in folders." << std::endl;
         filePath = sdkFindFilePath(defaultValue.data(), argv[0]);
     }
 
@@ -49,23 +48,23 @@ std::string parseArgs(const int argc, const char ** argv, const char * option, c
     if (infile.good())
     {
         std::cerr << "INFO: File opened: <" << retFilename.data()
-            << "> successfully!" << std::endl;
+                  << "> successfully!" << std::endl;
         file_errors = 0;
         infile.close();
     }
     else
     {
         std::cerr << "ERR: unable to open: <" << retFilename.data() << ">"
-                << std::endl;
+                  << std::endl;
         file_errors++;
         infile.close();
     }
 
     if (file_errors > 0)
     {
-      exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-    
+
     return retFilename;
 }
 
@@ -73,7 +72,7 @@ std::string parseArgs(const int argc, const char ** argv, const char * option, c
 /// @param imgPath Image file path
 /// @param channels How many channels does this image have
 /// @return The image object
-ColoredImageType loadImage(const std::string imgPath, int& channels)
+ColoredImageType loadImage(const std::string imgPath, int &channels)
 {
     // Decide format upon filename
     FREE_IMAGE_FORMAT fif = FreeImage_GetFIFFromFilename(imgPath.data());
@@ -98,20 +97,21 @@ ColoredImageType loadImage(const std::string imgPath, int& channels)
 
     // Calculate type and bpp to get how many channels in this image.
     FREE_IMAGE_TYPE internalType = FreeImage_GetImageType(inputImage);
-    auto   m_bpp = FreeImage_GetBPP(inputImage);
+    auto m_bpp = FreeImage_GetBPP(inputImage);
 
     std::cerr << "INFO: " << imgPath << " has type:" << internalType << std::endl;
-    if(internalType == FIT_BITMAP)
+    if (internalType == FIT_BITMAP)
     {
-        //standard bitmap
-        if(m_bpp == 8)
+        // standard bitmap
+        if (m_bpp == 8)
             channels = 1;
-        else if(m_bpp == 24)
+        else if (m_bpp == 24)
             channels = 3;
-        else if(m_bpp == 32)
-            channels = 4;    
+        else if (m_bpp == 32)
+            channels = 4;
         else
-            {}
+        {
+        }
     }
 
     return inputImage;
@@ -137,7 +137,7 @@ bool saveImage(ColoredImageType img, const std::string imgPath)
 bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::string channel, const int idx)
 {
     std::string filename = imgPath;
-    filename.insert(filename.length()-4, "_"+channel);
+    filename.insert(filename.length() - 4, "_" + channel);
 
     auto grayImg = img[idx];
     int width = FreeImage_GetWidth(grayImg);
@@ -179,11 +179,11 @@ bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::st
 /// @param channels The channels this image has
 /// @return Splited grayscale image
 GrayscaleImageStack imageChannelSplit(const ColoredImageType img, const int channels)
-{    
+{
     GrayscaleImageStack ret; // = new GrayscaleImageStack();
     for (int i = 1; i <= channels; i++)
         ret.push_back(FreeImage_GetChannel(img, static_cast<FREE_IMAGE_COLOR_CHANNEL>(i)));
-    
+
     return ret;
 }
 
@@ -196,22 +196,31 @@ ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int cha
     int width = FreeImage_GetWidth(imgs[0]);
     int height = FreeImage_GetHeight(imgs[0]);
     ColoredImageType rgbImage = FreeImage_Allocate(width, height, 24);
-    if (channels <= 2)
+    BYTE *bits = FreeImage_GetBits(rgbImage);
+
+    for (int y = 0; y < height; y++)
     {
-        FreeImage_SetChannel(rgbImage, imgs[1], FICC_GREEN);
-    }
-    if (channels <= 3)
-    {
-        FreeImage_SetChannel(rgbImage, imgs[2], FICC_BLUE);
-    }
-    if (channels <= 1)
-    {
-        FreeImage_SetChannel(rgbImage, imgs[0], FICC_RED);
+        for (int x = 0; x < width; x++)
+        {
+            BYTE r = FreeImage_GetPixelIndex(imgs[0], x, y);
+
+            int index = (y * width + x) * 3;
+            bits[index] = r;
+            if (channels > 1)
+            {
+                BYTE g = FreeImage_GetPixelIndex(imgs[1], x, y);
+                bits[index + 1] = g;
+            }
+            if (channels > 2)
+            {
+                BYTE b = FreeImage_GetPixelIndex(imgs[2], x, y);
+                bits[index + 2] = b;
+            }
+        }
     }
 
     return rgbImage;
 }
-
 
 
 /// @brief Save cufftComplex to file
@@ -224,16 +233,16 @@ ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int cha
 /// @param suffix suffix of the filename
 /// @param real Whether we save real part or the imaginary part, default is the real part
 /// @return Whether the save is successful
-bool saveImage(cufftComplex* devImgR, cufftComplex* devImgG, cufftComplex* devImgB,
-    const int width, const int height, 
-    const std::string imgPath, const std::string suffix, const bool real)
-{    
+bool saveImage(cufftComplex *devImgR, cufftComplex *devImgG, cufftComplex *devImgB,
+               const int width, const int height,
+               const std::string imgPath, const std::string suffix, const bool real)
+{
     std::string fftFilename = imgPath;
-    fftFilename.insert(imgPath.length()-4, "_"+suffix);
+    fftFilename.insert(imgPath.length() - 4, "_" + suffix);
     ColoredImageType tmpfftR = convertBytesToImg(devImgR, width, height, real);
     ColoredImageType tmpfftG = convertBytesToImg(devImgG, width, height, real);
     ColoredImageType tmpfftB = convertBytesToImg(devImgB, width, height, real);
-    GrayscaleImageStack fftImage {tmpfftR, tmpfftG, tmpfftB};
+    GrayscaleImageStack fftImage{tmpfftR, tmpfftG, tmpfftB};
     saveSlice(fftImage, fftFilename, "r", 0);
     saveSlice(fftImage, fftFilename, "g", 1);
     saveSlice(fftImage, fftFilename, "b", 2);
@@ -244,17 +253,17 @@ bool saveImage(cufftComplex* devImgR, cufftComplex* devImgG, cufftComplex* devIm
 }
 
 
-cufftComplex * convertImgToBytes(ColoredImageType grayImage)
+cufftComplex *convertImgToBytes(ColoredImageType grayImage)
 {
-    BYTE* bits = FreeImage_GetBits(grayImage);
+    BYTE *bits = FreeImage_GetBits(grayImage);
     int width = FreeImage_GetWidth(grayImage);
     int height = FreeImage_GetHeight(grayImage);
     int pitch = FreeImage_GetPitch(grayImage);
-    cufftComplex* imageArray;
+    cufftComplex *imageArray;
     cudaMallocManaged(&imageArray, width * height * sizeof(cufftComplex));
     for (int y = 0; y < height; y++)
     {
-        BYTE* pixel = (BYTE*)bits + y * pitch;
+        BYTE *pixel = (BYTE *)bits + y * pitch;
         for (int x = 0; x < width; x++)
         {
             // We write the result to column-major array
@@ -267,25 +276,29 @@ cufftComplex * convertImgToBytes(ColoredImageType grayImage)
 }
 
 
-ColoredImageType convertBytesToImg(float* grayArray, const int width, const int height)
+ColoredImageType convertBytesToImg(float *grayArray, const int width, const int height)
 {
     // Create a new 8-bit grayscale image from column-major array.
-    FIBITMAP* grayImage = FreeImage_Allocate(width, height, 8);
-    BYTE* bits = FreeImage_GetBits(grayImage);
+    FIBITMAP *grayImage = FreeImage_Allocate(width, height, 8);
+    BYTE *bits = FreeImage_GetBits(grayImage);
     int pitch = FreeImage_GetPitch(grayImage);
 
     float minValue = 100;
     float maxValue = -100;
 
     // Set pixel values from imageArray
-    for (int y = 0; y < height; y++) {
-        BYTE* pixel = (BYTE*)bits + y * pitch;
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++)
+    {
+        BYTE *pixel = (BYTE *)bits + y * pitch;
+        for (int x = 0; x < width; x++)
+        {
             float value = grayArray[x * height + y];
             pixel[x] = (uint8_t)value;
 
-            if (minValue > value) minValue = value;
-            if (maxValue < value) maxValue = value;
+            if (minValue > value)
+                minValue = value;
+            if (maxValue < value)
+                maxValue = value;
         }
     }
 
@@ -295,12 +308,11 @@ ColoredImageType convertBytesToImg(float* grayArray, const int width, const int 
     return grayImage;
 }
 
-
-ColoredImageType convertBytesToImg(cufftComplex* grayArray, const int width, const int height, const bool real)
+ColoredImageType convertBytesToImg(cufftComplex *grayArray, const int width, const int height, const bool real)
 {
     // Create a new 8-bit grayscale image from column-major array.
-    FIBITMAP* grayImage = FreeImage_Allocate(width, height, 8);
-    BYTE* bits = FreeImage_GetBits(grayImage);
+    FIBITMAP *grayImage = FreeImage_Allocate(width, height, 8);
+    BYTE *bits = FreeImage_GetBits(grayImage);
     int pitch = FreeImage_GetPitch(grayImage);
 
     float minValue = 100;
@@ -309,21 +321,25 @@ ColoredImageType convertBytesToImg(cufftComplex* grayArray, const int width, con
         grayArray << " , pitch: " << pitch << " , width: " << width << " , height: " << height << std::endl;
 
     // Set pixel values from imageArray
-    for (int y = 0; y < height; y++) {
-        BYTE* pixel = (BYTE*)bits + y * pitch;
-        for (int x = 0; x < width; x++) {
-          // printf("(%d, %d)\n", x, y);
-          float value;
-          if (real)
-            value = grayArray[x * height + y].x;
-          else
-            value = grayArray[x * height + y].y;
-          // printf("(%d, %d)\n", x, y);
+    for (int y = 0; y < height; y++)
+    {
+        BYTE *pixel = (BYTE *)bits + y * pitch;
+        for (int x = 0; x < width; x++)
+        {
+            // printf("(%d, %d)\n", x, y);
+            float value;
+            if (real)
+                value = grayArray[x * height + y].x;
+            else
+                value = grayArray[x * height + y].y;
+            // printf("(%d, %d)\n", x, y);
             pixel[x] = (uint8_t)value;
-          // printf("(%d, %d)\n", x, y);
+            // printf("(%d, %d)\n", x, y);
 
-            if (minValue > value) minValue = value;
-            if (maxValue < value) maxValue = value;
+            if (minValue > value)
+                minValue = value;
+            if (maxValue < value)
+                maxValue = value;
         }
     }
 
@@ -332,4 +348,3 @@ ColoredImageType convertBytesToImg(cufftComplex* grayArray, const int width, con
 
     return grayImage;
 }
-
