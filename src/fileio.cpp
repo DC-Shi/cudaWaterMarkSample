@@ -191,7 +191,26 @@ GrayscaleImageStack imageChannelSplit(const ColoredImageType img, const int chan
 /// @param imgs Grayscale images array
 /// @param channels How many channels does this image have
 /// @return The merged color image
-ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int channels);
+ColoredImageType imageChannelMerge(const GrayscaleImageStack imgs, const int channels)
+{
+    int width = FreeImage_GetWidth(imgs[0]);
+    int height = FreeImage_GetHeight(imgs[0]);
+    ColoredImageType rgbImage = FreeImage_Allocate(width, height, 24);
+    if (channels <= 2)
+    {
+        FreeImage_SetChannel(rgbImage, imgs[1], FICC_GREEN);
+    }
+    if (channels <= 3)
+    {
+        FreeImage_SetChannel(rgbImage, imgs[2], FICC_BLUE);
+    }
+    if (channels <= 1)
+    {
+        FreeImage_SetChannel(rgbImage, imgs[0], FICC_RED);
+    }
+
+    return rgbImage;
+}
 
 
 
