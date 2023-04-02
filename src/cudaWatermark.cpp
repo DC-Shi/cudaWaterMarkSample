@@ -68,9 +68,9 @@ int main(int argc, char *argv[])
     
     auto imgStack = imageChannelSplit(img, channels);
 
-    saveSlice(imgStack, filename, "_r", 0);
-    saveSlice(imgStack, filename, "_g", 1);
-    saveSlice(imgStack, filename, "_b", 2);
+    saveSlice(imgStack, filename, "r", 0);
+    saveSlice(imgStack, filename, "g", 1);
+    saveSlice(imgStack, filename, "b", 2);
 
     exit(EXIT_SUCCESS);
 
