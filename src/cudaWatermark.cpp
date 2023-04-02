@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     findCudaDevice(argc, (const char **)argv);
 
-    std::vector<std::string> imgNames{"color.png"};
+    std::vector<std::string> imgNames{"color.png", "sloth.png"};
 
     for (auto imgName : imgNames)
     {
@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
 
       std::string filename = parseArgs(argc, (const char **)argv, "input", imgName);
       int channels = -1;
-      ColoredImageType img = loadImage(filename, channels);
-      int width = FreeImage_GetWidth(img);
-      int height = FreeImage_GetHeight(img);
+      ColoredImageType oriImg = loadImage(filename, channels);
+      int width = FreeImage_GetWidth(oriImg);
+      int height = FreeImage_GetHeight(oriImg);
       std::cerr << "INFO: The image dimension is " <<
           width << "x" << height << "x" << channels <<
           " (W*H*C)." << std::endl;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
       std::cout << "\tStep 2: split the image into channels, save for each file." << std::endl;
       checkCudaErrors( cudaGetLastError() );
 
-      auto imgStack = imageChannelSplit(img, channels);
+      auto imgStack = imageChannelSplit(oriImg, channels);
 
       saveSlice(imgStack, filename, "r", 0);
       saveSlice(imgStack, filename, "g", 1);
@@ -108,10 +108,10 @@ int main(int argc, char *argv[])
       devImgB = convertImgToBytes(imgStack[2]);
 
 
-      std::cerr << "DEBUG: Step 3 devImgR: " << devImgR << 
-          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
-          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
-          std::endl;
+      // std::cerr << "DEBUG: Step 3 devImgR: " << devImgR << 
+      //     " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+      //     " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+      //     std::endl;
 
       ////////////////////////////////////////////////////////////////
       // Step 4: Make FFT
@@ -132,10 +132,10 @@ int main(int argc, char *argv[])
       // Need to wait for FFT to be completed
       checkCudaErrors( cudaDeviceSynchronize() );
 
-      std::cerr << "DEBUG: Step 4.1 devImgR: " << devImgR << 
-          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
-          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
-          std::endl;
+      // std::cerr << "DEBUG: Step 4.1 devImgR: " << devImgR << 
+      //     " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+      //     " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+      //     std::endl;
 
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "fft", true);
       
@@ -181,14 +181,14 @@ int main(int argc, char *argv[])
 
       
       
-      std::cerr << "DEBUG: Step 6.1 devImgR: " << devImgR << 
-          " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
-          " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
-          std::endl;
+      // std::cerr << "DEBUG: Step 6.1 devImgR: " << devImgR << 
+      //     " , (" << devImgR[0].x << ", " << devImgR[0].y << "i)" <<
+      //     " , (" << devImgR[1].x << ", " << devImgR[1].y << "i)" <<
+      //     std::endl;
         
       ////////////////////////////////////////////////////////////////
       // 7. Combine 3 channels into one, and save into RGB file.
-      std::cout << "\tStep 7. Combine 3 channels into one, and save into RGB file." << std::endl;
+      std::cout << "\tStep 7. Combine 3 channels into one." << std::endl;
       checkCudaErrors( cudaGetLastError() );
 
       ColoredImageType tmpfftedR = convertBytesToImg(devImgR, width, height, true);
@@ -196,6 +196,8 @@ int main(int argc, char *argv[])
       ColoredImageType tmpfftedB = convertBytesToImg(devImgB, width, height, true);
       GrayscaleImageStack fftedImageStack {tmpfftedR, tmpfftedG, tmpfftedB};
       ColoredImageType colorFftedImg = imageChannelMerge(fftedImageStack, 3);
+
+      std::cout << "\tStep 7.1  Save into RGB file." << std::endl;
       saveImage(colorFftedImg, filename + ".reconstructed.png");
       // Free allocated images.
       for (auto imgC : fftedImageStack)
@@ -204,10 +206,13 @@ int main(int argc, char *argv[])
       ////////////////////////////////////////////////////////////////
       // 8. Compare initial image and watermarked image, pixel by pixel, show the max diff, avg diff. Estimate the result should be only a few digit off.
       std::cout << "\tStep 8. Compare initial image and watermarked image." << std::endl;
-      checkCudaErrors( cudaGetLastError() );
+      ColoredImageType wmImg = loadImage(filename, channels);
+      compareTwoImg(oriImg, wmImg);
+
 
       // Free resources
-      FreeImage_Unload(img);
+      FreeImage_Unload(wmImg);
+      FreeImage_Unload(oriImg);
       for (auto imgC : imgStack)
         FreeImage_Unload(imgC);
       checkCudaErrors( cudaGetLastError() );
