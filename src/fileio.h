@@ -36,7 +36,7 @@ bool saveImage(ColoredImageType img, const std::string imgPath);
 /// @param layer Which layer does this belongs to, should be 'r', 'g', or 'b'
 /// @param idx Which layer to be saved in the grayscale stack
 /// @return Whether the save is successful
-bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::string layer, const int idx = 0);
+bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::string channel, const int idx);
 
 /// @brief Split the image by channels and save it to an array
 /// @param img The image object that has 1 or more channels

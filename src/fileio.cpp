@@ -130,12 +130,44 @@ bool saveImage(ColoredImageType img, const std::string imgPath)
 /// @param layer Which layer does this belongs to, should be 'r', 'g', or 'b'
 /// @param idx Which layer to be saved in the grayscale stack
 /// @return Whether the save is successful
-bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::string layer, const int idx)
+bool saveSlice(GrayscaleImageStack img, const std::string imgPath, const std::string channel, const int idx)
 {
     std::string filename = imgPath;
-    filename.insert(filename.length()-4, layer);
-    std::cout << "new filename is: " << filename << std::endl;
-    return FreeImage_Save(FIF_PNG, img[idx], filename.data());
+    filename.insert(filename.length()-4, "_"+channel);
+
+    auto grayImg = img[idx];
+    int width = FreeImage_GetWidth(grayImg);
+    int height = FreeImage_GetHeight(grayImg);
+    int pitch = FreeImage_GetPitch(grayImg);
+    std::cout << "INFO: saveSlice: " << width << "x" << height <<
+        " into: " << filename << std::endl;
+
+    // ColoredImageType rgbImage = FreeImage_ConvertTo24Bits(img[idx]);
+    ColoredImageType rgbImage = FreeImage_Allocate(width, height, 24);
+    if (channel == "r")
+    {
+        FreeImage_SetChannel(rgbImage, grayImg, FICC_RED);
+    }
+    else if (channel == "g")
+    {
+        FreeImage_SetChannel(rgbImage, grayImg, FICC_GREEN);
+    }
+    else if (channel == "b")
+    {
+        FreeImage_SetChannel(rgbImage, grayImg, FICC_BLUE);
+    }
+    else
+    {
+        std::cerr << "ERR: FreeImage: Cannot recognize channel <" << channel << ">" << std::endl;
+        return false;
+    }
+
+    bool result = saveImage(rgbImage, filename);
+
+    // Free the image locally allocated.
+    FreeImage_Unload(rgbImage);
+
+    return result;
 }
 
 /// @brief Split the image by channels and save it to an array
