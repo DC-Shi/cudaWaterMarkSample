@@ -6,7 +6,7 @@
 /// @param argc How many arguments
 /// @param argv Arguments array
 /// @param option Which option should be parsed
-/// @param defaultValue The default value for this option, NULL means the commandline must provide this option to continue
+/// @param defaultValue The default value for this option, empty means the commandline must provide this option to continue
 /// @return 
 std::string parseArgs(const int argc, const char ** argv, const char * option, const std::string defaultValue)
 {
@@ -21,11 +21,14 @@ std::string parseArgs(const int argc, const char ** argv, const char * option, c
     {
         if (defaultValue.empty())
         {
-            std::cerr << "ERR: You must provide the option <" << defaultValue
+            std::cerr << "ERR: You must provide value of the option <" << option
                 << "> to continue the program, exit." << std::endl;
             exit(EXIT_FAILURE);
 
         }
+
+        std::cout << "Using default value " << defaultValue <<
+            " for this option <" << option << ">" <<std::endl;
         filePath = sdkFindFilePath(defaultValue.data(), argv[0]);
     }
 

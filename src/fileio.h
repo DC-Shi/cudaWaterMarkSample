@@ -12,7 +12,7 @@ using GrayscaleImageStack = std::vector<FIBITMAP*>;
 /// @param argc How many arguments
 /// @param argv Arguments array
 /// @param option Which option should be parsed
-/// @param defaultValue The default value for this option, NULL means the commandline must provide this option to continue
+/// @param defaultValue The default value for this option, empty means the commandline must provide this option to continue
 /// @return 
 std::string parseArgs(const int argc, const char ** argv, const char * option, const std::string defaultValue);
 
