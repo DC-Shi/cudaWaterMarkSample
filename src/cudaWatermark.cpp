@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     findCudaDevice(argc, (const char **)argv);
 
-    std::vector<std::string> imgNames{"color.png", "sloth.png"};
+    std::vector<std::string> imgNames{"color.png", "flower.jpg", "sloth.png"};
 
     for (auto imgName : imgNames)
     {

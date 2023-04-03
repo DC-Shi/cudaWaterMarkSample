@@ -4,7 +4,9 @@
 # It seems speedup compiling
 export SMS=62
 
-make clean build -j 4
+make clean 
+
+make build -j 4
 
 make run 2>/dev/null
 
