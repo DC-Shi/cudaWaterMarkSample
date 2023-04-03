@@ -1,36 +1,50 @@
 # Introduction
-This is a sample code to demostrate CUDA NPP APIs. The template is from [Pascale's course](https://github.com/PascaleCourseraCourses/CUDAatScaleForTheEnterpriseCourseProjectTemplate) and code structure from [CUDA Samples](https://github.com/nvidia/cuda-samples)
+Image watermark prototype tool with cuFFT APIs and cuda code. 
 
-Go to https://docs.nvidia.com/cuda/npp/group__image__filtering__functions.html for more documentation on NPP APIs.
+The template is from [Pascale's course](https://github.com/PascaleCourseraCourses/CUDAatScaleForTheEnterpriseCourseProjectTemplate) and code structure from [CUDA Samples](https://github.com/nvidia/cuda-samples)
+. Go to https://docs.nvidia.com/cuda/cufft/ for more documentation on cuFFT APIs.
 
-The code from NVIDIA has its own license, please check the specific license file or the header of each file.
+## Project Technical Description
 
-## Project Description
+In order to add watermark to the image, we'll do the following steps, illustrated below:
 
-We demostrated a convolution based filter that transform from one image to convoluted images. Here we have a demostration of original image and convoluted image.
 
-Here you can see the different convolution kernels that act on the image:
-
-| Convolution Kernel             |  Image |
+| Steps             |  Images |
 :-------------------------:|:-------------------------:
-Original |  <img src="./data/Lena.png"  width="40%" height="40%">
-1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1 |  <img src="./data/Lena_convFilter_1%2C1.png"  width="40%" height="40%">
-2,2,2,2,2<br>2,2,2,2,2<br>2,2,1,2,2<br>2,2,2,2,2<br>2,2,2,2,2 |  <img src="./data/Lena_convFilter_2%2C1.png"  width="40%" height="40%">
-3,3,3,3,3<br>3,3,3,3,3<br>3,3,1,3,3<br>3,3,3,3,3<br>3,3,3,3,3 |  <img src="./data/Lena_convFilter_3%2C1.png"  width="40%" height="40%">
-4,4,4,4,4<br>4,4,4,4,4<br>4,4,1,4,4<br>4,4,4,4,4<br>4,4,4,4,4 |  <img src="./data/Lena_convFilter_4%2C1.png"  width="40%" height="40%">
+Loading image |  <img src="./data/flower.jpg"  width="91%">
+Split image into RGB channels |  <img src="./data/flower_r.jpg"  width="30%"> <img src="./data/flower_g.jpg"  width="30%"> <img src="./data/flower_b.jpg"  width="30%">
+FFT each channel |  <img src="./data/flower_fft_r.jpg"  width="30%"> <img src="./data/flower_fft_g.jpg"  width="30%"> <img src="./data/flower_fft_b.jpg"  width="30%">
+Watermark on FFT channels |  <img src="./data/flower_wmfft_r.jpg"  width="30%"> <img src="./data/flower_wmfft_g.jpg"  width="30%"> <img src="./data/flower_wmfft_b.jpg"  width="30%">
+Reverse on the watermarked channels |  <img src="./data/flower_wm_ifft_r.jpg"  width="30%"> <img src="./data/flower_wm_ifft_g.jpg"  width="30%"> <img src="./data/flower_wm_ifft_b.jpg"  width="30%">
+Merge RGB into new images |  <img src="./data/flower.jpg.reconstructed.png"  width="91%">
 
-As you can see, the larger value of the convolution kernel, the brighter image is.
 
-You can also try different setting or even different kernels by modifying `hostKernel` value in `src/convFilterNPP.cpp`.
+As you can see, there is only a small difference between watermarked image and the original image.
+
+You can also try different setting or even different kernels by modifying `applyKernel` in `src/wmKernel.cu`.
 
 
 ## How to compile & run
-Before run the code and compile the code, please make sure FreeImage dependency has already installed.
+Before run the code and compile the code, please make sure FreeImage dependency has already installed. Then you can easily compile and run the program using following script:
 
 ```
 ./run.sh
 ```
-Just execute the above, it will compile and run the program, even convert final result to PNG files!
+Just execute the above, it will compile and run the program, it will output the log and save every steps into seperate images! I'll excerpt part of the logs here:
+
+``` Text
+==== Dealing with image flower.jpg ====
+        Step 1: get the filename and load into image.
+        Step 2: split the image into channels, save for each file.
+        Step 3: make the data onto GPU.
+        Step 4: Make FFT.
+        Step 5. for each ffted channel, add watermark to the corners.
+        Step 6. for each channel, do iFFT, into normal space.
+        Step 7. Combine 3 channels into one.
+        Step 7.1  Save into RGB file.
+        Step 8. Compare initial image and watermarked image.
+Compare result: Two image max diff 255 , average err per pixel 1.95759
+```
 
 The code is tested on [NVIDIA Jetson TX2 platform](https://developer.nvidia.com/embedded/jetson-tx2), which has 6 ARM cores as well as 256-core NVIDIA Pascal(TM) GPU.
 
@@ -42,7 +56,7 @@ This folder should hold all binary/executable code that is built automatically o
 Note that I included the binary of ARM, which is supposed to run on NVIDIA Jetson TX2 platform(GPU arch sm_62). If you have other platform, please re-build the program by running `run.sh`
 
 ```data/```
-This folder contains sample input and sample output. In my experiments, `Lena.pgm` is the input image. But you can see the picture using `Lena.png`.
+This folder contains sample input and sample output. In my experiments, `"color.png", "flower.jpg", "sloth.png"` are the input images. Other images are generated from program. If you want to customize, add more pictures and change the code in `cudaWatermark.cpp`.
 
 ```lib/```
 Contains libraries that copied from original template repo. It contains GL, UtilNPP, and various helper headers.
@@ -50,7 +64,9 @@ Contains libraries that copied from original template repo. It contains GL, Util
 Notice that you might need FreeImage placed in the folder if you do not have FreeImage installed on the system.
 
 ```src/```
-One CPP file that handles image input, invokes NPP's API to do convolution of images, compute the image, and write to image file.
+- `cudaWatermark.cpp` the main file that contains main program logic.
+- `fileio.cpp` and `fileio.h` contains image read/write functions and image type convert functions.
+- `wmKernel.cu` and `wmKernel.cuh` contains the cuda kernel that do the watermark and scaling steps.
 
 ```README.md```
 This documentation.
@@ -62,7 +78,12 @@ The installation dependency library description of this repo.
 Makefile is used for making this project. You can build the binary simply by `make build`.
 
 ```run.sh```
-This script is for easy hands-on. It also included a python invokation that convert images to PNG format.
+This script is for easy hands-on. It will cleanup existing binaries and compile from scratch, then it will run the program. 
+The script will drop the debug info. If you want to see the debug info, please modify `run.sh` and remove `2>/dev/null`
 
-```ConvertImageToPng.py```
-Python script that convert image to PNG.
+
+# Misc
+
+The code from NVIDIA has its own license, please check the specific license file or the header of each file.
+
+The flower image is taken by DC-Shi and can be only used for this cudaWaterMarkSample project. Others images are searched from internet.
