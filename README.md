@@ -6,7 +6,15 @@ The template is from [Pascale's course](https://github.com/PascaleCourseraCourse
 
 ## Project Technical Description
 
-In order to add watermark to the image, we'll do the following steps, illustrated below:
+In order to add watermark to the image, we'll do the following steps. 
+- Read image
+- Split image into 3 channels (RGB)
+- For each channel, FFT forward.
+- In FFT images, add watermark using CUDA kernels to it.
+- Convert back from FFT watermarked images to normal channels (RGB).
+- Merge the channel and calculate difference.
+
+You can also have steps with images below:
 
 
 | Steps             |  Images |
@@ -19,9 +27,8 @@ Reverse on the watermarked channels |  <img src="./data/flower_wm_ifft_r.jpg"  w
 Merge RGB into new images |  <img src="./data/flower.jpg.reconstructed.png"  width="91%">
 
 
-As you can see, there is only a small difference between watermarked image and the original image.
+**Can you spot the difference?** These two images are nearly identical and only a small difference between watermarked image and the original image. For example, you can check the flower's petal in the center, which you'll find some blue-ish dots in the watermarked image.
 
-You can also try different setting or even different kernels by modifying `applyKernel` in `src/wmKernel.cu`.
 
 
 ## How to compile & run
@@ -63,10 +70,10 @@ Contains libraries that copied from original template repo. It contains GL, Util
 
 Notice that you might need FreeImage placed in the folder if you do not have FreeImage installed on the system.
 
-```src/```
+```src/``` Source code folder.
 - `cudaWatermark.cpp` the main file that contains main program logic.
 - `fileio.cpp` and `fileio.h` contains image read/write functions and image type convert functions.
-- `wmKernel.cu` and `wmKernel.cuh` contains the cuda kernel that do the watermark and scaling steps.
+- `wmKernel.cu` and `wmKernel.cuh` contains the cuda kernel that do the watermark and scaling steps. You can also try different setting or even different kernels by modifying `applyKernel`.
 
 ```README.md```
 This documentation.
