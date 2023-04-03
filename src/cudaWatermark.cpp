@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
       ////////////////////////////////////////////////////////////////
       // 8. Compare initial image and watermarked image, pixel by pixel, show the max diff, avg diff. Estimate the result should be only a few digit off.
       std::cout << "\tStep 8. Compare initial image and watermarked image." << std::endl;
-      ColoredImageType wmImg = loadImage(filename, channels);
+      ColoredImageType wmImg = loadImage(filename + ".reconstructed.png", channels);
       compareTwoImg(oriImg, wmImg);
 
 
