@@ -1,0 +1,123 @@
+INFO: Searching for color.png for this option <input> in folders.
+INFO: File opened: <./data/color.png> successfully!
+INFO: ./data/color.png has type:1
+INFO: The image dimension is 2000x1300x3 (W*H*C).
+INFO: saveSlice: 2000x1300 into: ./data/color_r.png
+INFO: saveSlice: 2000x1300 into: ./data/color_g.png
+INFO: saveSlice: 2000x1300 into: ./data/color_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -3.55192e+07 , max value: 2.45268e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x10243d000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -7.07363e+07 , max value: 2.45472e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x103814000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -3.47219e+07 , max value: 2.45021e+08
+INFO: saveSlice: 2000x1300 into: ./data/color_fft_r.png
+INFO: saveSlice: 2000x1300 into: ./data/color_fft_g.png
+INFO: saveSlice: 2000x1300 into: ./data/color_fft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -3.55192e+07 , max value: 2.45268e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x10243d000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -7.07363e+07 , max value: 2.45472e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x103814000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -3.47219e+07 , max value: 2.45021e+08
+INFO: saveSlice: 2000x1300 into: ./data/color_wmfft_r.png
+INFO: saveSlice: 2000x1300 into: ./data/color_wmfft_g.png
+INFO: saveSlice: 2000x1300 into: ./data/color_wmfft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -5.06121 , max value: 258.281
+DEBUG: convertBytesToImg, Complex, ptr: 0x10243d000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -5.02806 , max value: 262.138
+DEBUG: convertBytesToImg, Complex, ptr: 0x103814000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -6.49156 , max value: 257.958
+INFO: saveSlice: 2000x1300 into: ./data/color_wm_ifft_r.png
+INFO: saveSlice: 2000x1300 into: ./data/color_wm_ifft_g.png
+INFO: saveSlice: 2000x1300 into: ./data/color_wm_ifft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -5.06121 , max value: 258.281
+DEBUG: convertBytesToImg, Complex, ptr: 0x10243d000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -5.02806 , max value: 262.138
+DEBUG: convertBytesToImg, Complex, ptr: 0x103814000 , pitch: 2000 , width: 2000 , height: 1300
+DEBUG: convertBytesToImg, Complex, min value: -6.49156 , max value: 257.958
+INFO: ./data/color.png.reconstructed.png has type:1
+INFO: Searching for flower.jpg for this option <input> in folders.
+INFO: File opened: <./data/flower.jpg> successfully!
+INFO: ./data/flower.jpg has type:1
+INFO: The image dimension is 1000x662x3 (W*H*C).
+INFO: saveSlice: 1000x662 into: ./data/flower_r.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_g.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_b.jpg
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -8.21705e+06 , max value: 5.2165e+07
+DEBUG: convertBytesToImg, Complex, ptr: 0x101573000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -7.12289e+06 , max value: 6.00648e+07
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a80000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -4.65166e+06 , max value: 3.01802e+07
+INFO: saveSlice: 1000x662 into: ./data/flower_fft_r.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_fft_g.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_fft_b.jpg
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -8.21705e+06 , max value: 5.2165e+07
+DEBUG: convertBytesToImg, Complex, ptr: 0x101573000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -7.12289e+06 , max value: 6.00648e+07
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a80000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -4.65166e+06 , max value: 3.01802e+07
+INFO: saveSlice: 1000x662 into: ./data/flower_wmfft_r.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_wmfft_g.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_wmfft_b.jpg
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -2.95234 , max value: 260.112
+DEBUG: convertBytesToImg, Complex, ptr: 0x101573000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -3.78815 , max value: 255.954
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a80000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -8.52234 , max value: 258.099
+INFO: saveSlice: 1000x662 into: ./data/flower_wm_ifft_r.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_wm_ifft_g.jpg
+INFO: saveSlice: 1000x662 into: ./data/flower_wm_ifft_b.jpg
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -2.95234 , max value: 260.112
+DEBUG: convertBytesToImg, Complex, ptr: 0x101573000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -3.78815 , max value: 255.954
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a80000 , pitch: 1000 , width: 1000 , height: 662
+DEBUG: convertBytesToImg, Complex, min value: -8.52234 , max value: 258.099
+INFO: ./data/flower.jpg.reconstructed.png has type:1
+INFO: Searching for sloth.png for this option <input> in folders.
+INFO: File opened: <./data/sloth.png> successfully!
+INFO: ./data/sloth.png has type:1
+INFO: The image dimension is 1333x1000x4 (W*H*C).
+INFO: saveSlice: 1333x1000 into: ./data/sloth_r.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_g.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.89087e+07 , max value: 1.58334e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a92000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.30086e+07 , max value: 1.35102e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x1024be000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.40269e+07 , max value: 9.55174e+07
+INFO: saveSlice: 1333x1000 into: ./data/sloth_fft_r.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_fft_g.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_fft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.89087e+07 , max value: 1.58334e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a92000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.30086e+07 , max value: 1.35102e+08
+DEBUG: convertBytesToImg, Complex, ptr: 0x1024be000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -1.40269e+07 , max value: 9.55174e+07
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wmfft_r.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wmfft_g.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wmfft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -6.46183 , max value: 259.989
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a92000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -5.14746 , max value: 259.72
+DEBUG: convertBytesToImg, Complex, ptr: 0x1024be000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -6.53273 , max value: 260.02
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wm_ifft_r.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wm_ifft_g.png
+INFO: saveSlice: 1333x1000 into: ./data/sloth_wm_ifft_b.png
+DEBUG: convertBytesToImg, Complex, ptr: 0x101066000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -6.46183 , max value: 259.989
+DEBUG: convertBytesToImg, Complex, ptr: 0x101a92000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -5.14746 , max value: 259.72
+DEBUG: convertBytesToImg, Complex, ptr: 0x1024be000 , pitch: 1336 , width: 1333 , height: 1000
+DEBUG: convertBytesToImg, Complex, min value: -6.53273 , max value: 260.02
+INFO: ./data/sloth.png.reconstructed.png has type:1

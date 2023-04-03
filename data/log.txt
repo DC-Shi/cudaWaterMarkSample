@@ -1,0 +1,37 @@
+./bin/aarch64_linux_release_cudaWatermark.exe Starting...
+
+GPU Device 0: "Pascal" with compute capability 6.2
+
+==== Dealing with image color.png ====
+	Step 1: get the filename and load into image.
+	Step 2: split the image into channels, save for each file.
+	Step 3: make the data onto GPU.
+	Step 4: Make FFT.
+	Step 5. for each ffted channel, add watermark to the corners.
+	Step 6. for each channel, do iFFT, into normal space.
+	Step 7. Combine 3 channels into one.
+	Step 7.1  Save into RGB file.
+	Step 8. Compare initial image and watermarked image.
+Compare result: Two image max diff 255 , average err per pixel 1.0943
+==== Dealing with image flower.jpg ====
+	Step 1: get the filename and load into image.
+	Step 2: split the image into channels, save for each file.
+	Step 3: make the data onto GPU.
+	Step 4: Make FFT.
+	Step 5. for each ffted channel, add watermark to the corners.
+	Step 6. for each channel, do iFFT, into normal space.
+	Step 7. Combine 3 channels into one.
+	Step 7.1  Save into RGB file.
+	Step 8. Compare initial image and watermarked image.
+Compare result: Two image max diff 255 , average err per pixel 1.95759
+==== Dealing with image sloth.png ====
+	Step 1: get the filename and load into image.
+	Step 2: split the image into channels, save for each file.
+	Step 3: make the data onto GPU.
+	Step 4: Make FFT.
+	Step 5. for each ffted channel, add watermark to the corners.
+	Step 6. for each channel, do iFFT, into normal space.
+	Step 7. Combine 3 channels into one.
+	Step 7.1  Save into RGB file.
+	Step 8. Compare initial image and watermarked image.
+Compare result: Two image max diff 255 , average err per pixel 4.02208
