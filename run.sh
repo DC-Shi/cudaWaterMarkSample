@@ -4,8 +4,8 @@
 # It seems speedup compiling
 export SMS=62
 
-make clean build
+make clean build -j 4
 
-make run 
+make run 2>/dev/null
 
 #ARGS="-input=data/color.png"

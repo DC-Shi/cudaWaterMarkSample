@@ -2,7 +2,7 @@
 
 __global__ void applyKernel(cufftComplex* array, int width, int height, int startX, int startY)
 {
-    float maskedValue = 16;
+    float maskedValue = 256;
     size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx < width*height)
     {
