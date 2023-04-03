@@ -143,8 +143,10 @@ int main(int argc, char *argv[])
       // Step 5. for each ffted channel, add watermark to the corners.
       std::cout << "\tStep 5. for each ffted channel, add watermark to the corners." << std::endl;
       checkCudaErrors( cudaGetLastError() );
-
-      applyKernelToImgAsync();
+      
+      applyKernelToImgAsync(devImgR, width, height);
+      applyKernelToImgAsync(devImgG, width, height);
+      applyKernelToImgAsync(devImgB, width, height);
       checkCudaErrors( cudaDeviceSynchronize() );
       // 5.1 save the changed ffted channel to image file.
       saveImage(devImgR, devImgG, devImgB, width, height, filename, "wmfft", true);
