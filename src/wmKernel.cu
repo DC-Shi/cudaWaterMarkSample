@@ -1,7 +1,8 @@
 #include "wmKernel.cuh"
 
-__global__ void applyKernel(cufftComplex* array, int width, int height)
+__global__ void applyKernel(cufftComplex* array, int width, int height, int startX, int startY)
 {
+    float maskedValue = 16;
     size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx < width*height)
     {
@@ -9,44 +10,44 @@ __global__ void applyKernel(cufftComplex* array, int width, int height)
         int y = idx % height;
         int x = idx / height;
         // draw a line
-        if (100 <= x && x <= 120)
-            if (40 <= y && y <= 180)
+        if (100+startX <= x && x <= 120+startX)
+            if (40+startY <= y && y <= 180+startY)
             {
-                array[idx].x = 255;
+                array[idx].x = maskedValue;
             }
 
         // draw a circle, the (0,0) is left-bottom
-        float center1X = 80;
-        float center1Y = 80;
+        float center1X = 80+startX;
+        float center1Y = 80+startY;
         float distance1Sq = (x-center1X)*(x-center1X) + (y-center1Y)*(y-center1Y);
 
         if (400 <= distance1Sq && distance1Sq <= 1600)
         {
-            array[idx].x = 255;
+            array[idx].x = maskedValue;
         }
 
         // draw another circle, the (0,0) is left-bottom
-        float center2X = 180;
-        float center2Y = 80;
+        float center2X = 180+startX;
+        float center2Y = 80+startY;
         float distance2Sq = (x-center2X)*(x-center2X) + (y-center2Y)*(y-center2Y);
 
         if (400 <= distance2Sq && distance2Sq <= 1600)
         {
             float cosTheta = (x-center2X) / sqrt(distance2Sq);
             if (cosTheta < 0.8)
-                array[idx].x = 255;
+                array[idx].x = maskedValue;
         }
 
         // draw a line
-        if (240 <= x && x <= 320)
-            if (70 <= y && y <= 90)
+        if (240+startX <= x && x <= 320+startX)
+            if (70+startY <= y && y <= 90+startY)
             {
-                array[idx].x = 255;
+                array[idx].x = maskedValue;
             }
 
         // draw another circle, the (0,0) is left-bottom
-        float center3X = 380;
-        float center3Y = 80;
+        float center3X = 380+startX;
+        float center3Y = 80+startY;
         float distance3Sq = (x-center3X)*(x-center3X) + (y-center3Y)*(y-center3Y);
 
         if (400 <= distance3Sq && distance3Sq <= 1600)
@@ -54,19 +55,19 @@ __global__ void applyKernel(cufftComplex* array, int width, int height)
             float cosTheta = (x-center3X) / sqrt(distance3Sq);
             float sinTheta = (y-center3Y) / sqrt(distance3Sq);
             if (cosTheta < 0.7 && sinTheta >= 0)
-                array[idx].x = 255;
+                array[idx].x = maskedValue;
             if (cosTheta > -0.7 && sinTheta <= 0)
-                array[idx].x = 255;
-            if (340 <= x && x <= 420)
-                if (70 <= y && y <= 90)
+                array[idx].x = maskedValue;
+            if (340+startX <= x && x <= 420+startX)
+                if (70+startY <= y && y <= 90+startY)
                 {
-                    array[idx].x = 255;
+                    array[idx].x = maskedValue;
                 }
         }
-        if (350 <= x && x <= 410)
-            if (70 <= y && y <= 90)
+        if (350+startX <= x && x <= 410+startX)
+            if (70+startY <= y && y <= 90+startY)
             {
-                array[idx].x = 255;
+                array[idx].x = maskedValue;
             }
     }
 }
@@ -75,7 +76,10 @@ void applyKernelToImgAsync(cufftComplex* array, int width, int height)
 {
     size_t threadPerBlock = 1024;
     size_t blocks = (width*height + threadPerBlock - 1)/threadPerBlock;
-    applyKernel<<<blocks, threadPerBlock>>>(array, width, height);
+    // applyKernel<<<blocks, threadPerBlock>>>(array, width, height, -10, -10);
+    applyKernel<<<blocks, threadPerBlock>>>(array, width, height, 0, height-200);
+    // applyKernel<<<blocks, threadPerBlock>>>(array, width, height, width-500, 0);
+    // applyKernel<<<blocks, threadPerBlock>>>(array, width, height, width-500, height-200);
 }
 
 
@@ -101,8 +105,6 @@ void scaleComplexAsync(cufftComplex* array, int width, int height, float factor)
 
 void compareTwoImg(ColoredImageType a, ColoredImageType b)
 {
-    std::cout << "NOTIMPLEMENTEDCOMPARE" << std::endl;
-
     int widthA = FreeImage_GetWidth(a);
     int heightA = FreeImage_GetHeight(a);
     int widthB = FreeImage_GetWidth(b);
