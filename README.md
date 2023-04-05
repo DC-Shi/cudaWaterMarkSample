@@ -1,5 +1,5 @@
-# Introduction
-Image watermark prototype tool with cuFFT APIs and cuda code. 
+# Watermark Introduction
+Image watermark prototype tool with **cuFFT** APIs and **CUDA** code. For non-GPU part, it uses **FreeImage** library to handle image input/output.
 
 The template is from [Pascale's course](https://github.com/PascaleCourseraCourses/CUDAatScaleForTheEnterpriseCourseProjectTemplate) and code structure from [CUDA Samples](https://github.com/nvidia/cuda-samples)
 . Go to https://docs.nvidia.com/cuda/cufft/ for more documentation on cuFFT APIs.
